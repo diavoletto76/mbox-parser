@@ -1,8 +1,4 @@
-(ns mbox-parser.core
-  (:require [clojure.java.io :as io])
-  (:import [javax.mail Session Transport Message$RecipientType]
-           [javax.mail.internet MimeMessage InternetAddress]
-           [java.util Properties]))
+(ns mbox-parser.core)
 
 
 (defn- mbox-separator?
@@ -15,7 +11,9 @@
        (boolean (re-matches #"^From .*@.* .*$" line2))))
 
 
-(defn parse-lines
+(defn- parse-lines
+  "Given line-seq returns a lazy seq of messages. Messages are
+  represented as a lazy sequence of lines."
   [lines]
   (let [fixed-lines (cons "" lines)]
     (->> (map list fixed-lines (rest fixed-lines))
@@ -25,27 +23,9 @@
          (map rest))))
 
 
-(defn parse-mbox-file
-  ""
-  [path]
-  (with-open [rdr (io/reader path)]
-    (->> (line-seq rdr)
-         (parse-lines)
-         (doall))))
-
-
-(defn string->stream
-  ([s] (string->stream s "UTF-8"))
-  ([s encoding]
-   (-> s
-       (.getBytes encoding)
-       (java.io.ByteArrayInputStream.))))
-
-
-(def session (Session/getInstance (Properties.)))
-
-
-(defn get-message [los]
-  (->> (clojure.string/join "\n" los)
-       (string->stream)
-       (MimeMessage. session)))
+(defn parse-reader
+  "Given the BufferedReader of mbox returns a lazy seq of messages
+  contained in mbox itself. Messages are represented as lazy sequence of lines"
+  [reader]
+  (->> (line-seq reader)
+       (parse-lines)))
