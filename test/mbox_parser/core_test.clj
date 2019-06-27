@@ -1,28 +1,19 @@
 (ns mbox-parser.core-test
   (:require [clojure.test :refer :all]
-            [clojure.java.io :as io]
-            [mbox-parser.core :refer :all])
+            [mbox-parser.core :refer :all]
+            [mbox-parser.utils :refer :all])
   (:import [javax.mail Session Transport Message$RecipientType]
            [javax.mail.internet MimeMessage InternetAddress]
            [java.util Properties]))
 
 (def mbox1 "var/Folder.mbox/mbox")
-(def session (-> (Properties.) (Session/getInstance)))
-
-
-(defn string->stream
-  ([s] (string->stream s "UTF-8"))
-  ([s encoding]
-   (-> s
-       (.getBytes encoding)
-       (java.io.ByteArrayInputStream.))))
 
 
 (defn parse-message
   [los]
   (->> (clojure.string/join "\n" los)
        (string->stream)
-       (MimeMessage. session)))
+       (MimeMessage. (-> (Properties.) (Session/getInstance)))))
 
 
 (defn mbox->seq
@@ -36,6 +27,14 @@
   [path]
   (->> (mbox->seq path)
        (map parse-message)))
+
+
+(defn mbox->messages2
+  [path]
+  (with-open [rdr (clojure.java.io/reader path)]
+    (->> (parse-reader rdr)
+         (map parse-message)
+         (doall))))
 
 
 (deftest test-count-messages

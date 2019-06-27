@@ -1,10 +1,47 @@
 # mbox-parser
 
-Pure Clojure implementation of lazy Mbox parser
+Pure Clojure implementation of a lazy Mbox parser.
+
 
 ## Usage
 
-FIXME
+Utility function to create `MimeMessages` from _sequence of strings_
+representing mail message.
+
+``` clojure
+(defn parse-message
+  [los]
+  (->> (clojure.string/join "\n" los)
+       (mbox-parser.utils/string->stream)
+       (MimeMessage. (-> (Properties.) (Session/getInstance)))))
+```
+
+
+Utility functions to parse Mbox returning lazy sequence of `MimeMessages`.
+
+``` clojure
+(defn mbox->messages
+  [path]
+  (with-open [rdr (clojure.java.io/reader path)]
+    (->> (parse-reader rdr)
+         (map parse-message)
+         (doall))))
+```
+
+Please note that `mbox-parser` does not implement these functions
+because it doesn't relay on javamail library and doesn't take care of
+opening resources for reading messages.
+
+
+Given previous functions `mbox-parser` can be used like this.
+
+``` clojure
+(defn list-of-subjects
+    [mbox]
+    (->> (mbox->messages mbox)
+         (map #(.getSubject %)))
+```
+
 
 ## License
 
