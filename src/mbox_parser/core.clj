@@ -1,6 +1,5 @@
 (ns mbox-parser.core)
 
-
 (defn- mbox-separator?
   "As per RFC 4155 (https://tools.ietf.org/html/rfc4155) Mbox separator is
   a sequence of empty line + line containing \"From <email> <timestamp>\""
@@ -9,7 +8,6 @@
   [line1 line2]
   (and (empty? line1)
        (boolean (re-matches #"^From .*@.* .*$" line2))))
-
 
 (defn- parse-lines
   "Given line-seq returns a lazy seq of messages. Messages are
@@ -21,7 +19,6 @@
          (filter (fn [[[a b]]] ((complement mbox-separator?) a b)))
          (map #(map first %))
          (map rest))))
-
 
 (defn parse-reader
   "Given the BufferedReader of mbox returns a lazy seq of messages

@@ -8,13 +8,11 @@
 
 (def mbox1 "var/Folder.mbox/mbox")
 
-
 (defn parse-message
   [los]
   (->> (clojure.string/join "\n" los)
        (string->stream)
        (MimeMessage. (-> (Properties.) (Session/getInstance)))))
-
 
 (defn mbox->seq
   [path]
@@ -22,12 +20,10 @@
     (-> (parse-reader rdr)
         (doall))))
 
-
 (defn mbox->messages
   [path]
   (->> (mbox->seq path)
        (map parse-message)))
-
 
 (defn mbox->messages2
   [path]
@@ -36,12 +32,10 @@
          (map parse-message)
          (doall))))
 
-
 (deftest test-count-messages
   (testing "count messages"
     (is (= 5 (count (mbox->seq mbox1)))
         (= 5 (count (mbox->messages mbox1))))))
-
 
 (deftest test-message-1
   (testing "message 1"
@@ -50,14 +44,12 @@
       (is (= "A formatted message" (.getSubject m))
           (= "diavoletto76@gmail.com" (.getAddress f))))))
 
-
 (deftest test-message-2
   (testing "message 2"
     (let [m (nth (mbox->messages mbox1) 1)
           f (aget (.getFrom m) 0)]
       (is (= "Two attachments" (.getSubject m))
           (= "diavoletto76@gmail.com" (.getAddress f))))))
-
 
 (deftest test-subjects
   (testing "subjects"

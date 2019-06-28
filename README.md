@@ -9,6 +9,9 @@ Utility function to create `MimeMessages` from _sequence of strings_
 representing mail message.
 
 ``` clojure
+(import javax.mail.Session)
+(import javax.internet.MimeMessage)
+
 (defn parse-message
   [los]
   (->> (clojure.string/join "\n" los)
@@ -17,9 +20,12 @@ representing mail message.
 ```
 
 
-Utility functions to parse Mbox returning lazy sequence of `MimeMessages`.
+Utility function to parse Mbox returning lazy sequence of `MimeMessages`.
 
 ``` clojure
+(import javax.mail.Session)
+(import javax.internet.MimeMessage)
+
 (defn mbox->messages
   [path]
   (with-open [rdr (clojure.java.io/reader path)]
@@ -28,9 +34,9 @@ Utility functions to parse Mbox returning lazy sequence of `MimeMessages`.
          (doall))))
 ```
 
-Please note that `mbox-parser` does not implement these functions
-because it doesn't relay on javamail library and doesn't take care of
-opening resources for reading messages.
+`mbox-parser` doesn't implement these functions because it doesn't
+relay on javamail library and doesn't take care of opening resources
+for reading messages.
 
 
 Given previous functions `mbox-parser` can be used like this.
